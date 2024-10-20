@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import QDialog, QApplication, QMainWindow
 
 from client.chat import ChatClient
 from domain.Message import Message
+from page.mainPage import MainPage
 from thread.worker_thread import SendThread
 
 from ui.chat_system_ui import Ui_Form
@@ -212,8 +213,7 @@ class MyMainForm(QDialog, Ui_Form):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    # app.setAttribute(Qt.AA_EnableHighDpiScaling, True)  # 自适应高分屏
     app.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
-    main = LoginForm()
+    main = MainPage('123')
     main.show()
     sys.exit(app.exec_())

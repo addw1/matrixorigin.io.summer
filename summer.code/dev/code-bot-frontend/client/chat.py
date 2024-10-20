@@ -3,6 +3,7 @@ from typing import List
 from domain.Message import Message
 import requests
 
+
 def mock(name, group_name, text):
     return group_name + '%I want to recommend M365 Business for you because it offers a comprehensive suite of tools that can significantly enhance productivity and collaboration within your team. With M365 Business, you get access to essential applications like Word, Excel, and PowerPoint, as well as powerful cloud services like OneDrive and SharePoint.'
 
@@ -11,17 +12,53 @@ GUIDE_CONVERSATION = 'I am Opportunity Copilot. How can I assist you today? I ca
 
 
 class ChatClient:
-    def get_groups(self, user_id):
-        return ['default']
+    """
+    func: get the user's group
+    """
+    def get_groups(self, user_id:str) -> List[str]:
+        return get_groups_mock()
 
+    """
+    func: get the user's chat history
+    """
     def get_mes(self, user_id: str, group_name: str) -> List[Message]:
-        return [Message(
-            sender='bot',
-            content=GUIDE_CONVERSATION
-        )]
+        return get_mes_mock()
 
+    """
+    func: send the message from the db
+    """
     def send_msg(self, name, group_name, text):
-        return group_name + "%" + self.call_api(name, text)
+        return 'test 01'
+        try:
+            url = "http://localhost:5000/api/chat"
+            data = {
+                "partner_name": name,
+                "chat_history": [],
+                "content": text
+            }
+            response = requests.post(url, json=data)
+            response_data = response.json()
+            response_value = response_data.get("response")
+            # print(response_value)
+            return response_value
+        except Exception as e:
+            print(e)
+        return 'error'
+    def subscribe(self, user_id:str, group_name:str) -> Message:
+        return '1'
+        try:
+            url = "http://localhost:5000/api/chat"
+            data = {
+                "user_name": user_id,
+                "group_name": group_name,
+            }
+            response = requests.post(url, json=data)
+            response_data = response.json()
+            response_value = response_data.get("response")
+            return response_value
+        except Exception as e:
+            print(e)
+            return 'error'
 
     def send_code(self, code):
         try:
@@ -76,3 +113,13 @@ class ChatClient:
             print("An error occurred:", e)
 
 
+def get_groups_mock():
+    return ['default', 'spring boot', 'matrix one']
+
+
+GUIDE_CONVERSATION = 'Hi, I am code chat bot, what can I help you today'
+def get_mes_mock():
+    return [Message(
+        sender='bot',
+        content=GUIDE_CONVERSATION
+    )]
