@@ -35,7 +35,7 @@ def download_task(git_url):
         port=6001)  # 指定c+ollection_name
 
 
-@main_bp.route('/subscribe', methods=['POST'])
+
 def subscribe():
     # Check if the request contains JSON data
     if not request.is_json:
@@ -53,9 +53,9 @@ def subscribe():
         return jsonify({"status": "downloading"}), 200
 
 # 接收来自code-bot的提问
-@main_bp.route('/talks/<string:repoName>/<int:userID>/<string:question>', methods=['GET', 'POST'])
+
 def talk(repoName, userID, question):
     vectorstore = get_vectorstore(repoName)
     qa_chain = generate_qa_chain(vectorstore)
     result = qa_chain({"query": request.question})    
-    return f"answer: {result['result']}, history: {result['history']}"
+    return result['result']

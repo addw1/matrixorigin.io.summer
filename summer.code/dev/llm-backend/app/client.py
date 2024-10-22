@@ -39,3 +39,34 @@ class DbClient:
                         if db:
                                 db.close()
 
+        def store_messages(self, room_name, sender_name, content):
+                config = Config()
+                db = pymysql.connect(
+                        host=config.DATABASE_HOST,
+                        port=config.DATABASE_PORT,
+                        user=config.DATABASE_USER,
+                        password=config.DATABASE_PSW,
+                )
+                # Create a cursor object
+                try:
+                        with db.cursor() as cursor:
+
+                                sql = """
+                                    INSERT INTO messages (room_name, sender_name, content, create_time) 
+                                    VALUES (%s, %s, %s, NOW())
+                                """
+                                # Execute the query
+                                cursor.execute(sql, (room_name, sender_name, content))
+                                # Fetch the result
+                                result = cursor.fetchone()
+                                # Check if the table exists
+                                if result[0] == 1:
+                                        return True
+                                else:
+                                        return False
+                except pymysql.Error as e:
+                        print(f"Error connecting to MySQL: {e}")
+                        return False
+                finally:
+                        if db:
+                                db.close()
