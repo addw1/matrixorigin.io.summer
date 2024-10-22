@@ -1,11 +1,12 @@
 import sys
 from PyQt5 import QtCore
-from PyQt5.QtCore import Qt, QThread, QTimer
+from PyQt5.QtCore import Qt, QThread
 from PyQt5.QtWidgets import QDialog, QApplication, QMainWindow
 
 from client.chat import ChatClient
 from domain.Message import Message
-from thread.worker_thread import SendThread, UpdateThread
+from page.mainPage import MainPage
+from thread.worker_thread import SendThread
 
 from ui.chat_system_ui import Ui_Form
 from ui.signin_ui import Ui_Form as Signin_Form
@@ -98,8 +99,6 @@ class MyMainForm(QDialog, Ui_Form):
         self.start_x = None
         self.start_y = None
 
-        self.init_timer()
-
     def mousePressEvent(self, event):
         try:
             if event.button() == QtCore.Qt.LeftButton:
@@ -147,7 +146,6 @@ class MyMainForm(QDialog, Ui_Form):
         group_name = self.search_line.text()
         self.search_line.clear()
         self.add_groups(group_name)
-        self.chat_client.subscribe(self.user_id, group_name)
 
     def on_send_clicked(self):
         text = self.input_line.toPlainText()
@@ -201,13 +199,6 @@ class MyMainForm(QDialog, Ui_Form):
         self.thread.result_ready.connect(self.update_response)
         self.thread.start()
 
-    def asyn_update(self, text, group_name):
-        self.thread = UpdateThread(
-
-        )
-        self.thread.result_ready.connect(self.update_response)
-        self.thread.start()
-
     def update_response(self, response):
         # group_name, response
         parts = response.split('%')
@@ -219,30 +210,10 @@ class MyMainForm(QDialog, Ui_Form):
         if self.cur_session == parts[0]:
             self.add_bubble(mes)
 
-    def init_timer(self):
-        self.timer = QTimer(self)
-        minutes = 1
-        milliseconds = minutes * 1 * 1000
-        self.timer.timeout.connect(self.check_update)
-        self.timer.start(milliseconds)
 
-    def check_update(self):
-        # visit the repo lists
-        for index in range(self.session_list.count()):
-            item = self.session_list.item(index)  # 获取每个 QListWidgetItem
-            widget = self.session_list.itemWidget(item)  # 获取关联的 QWidget
-            print('test1')
-            if widget:
-                print('test2')
-                group_item = widget.property("group_item")
-                if group_item:
-                    status = group_item.label_3.text()
-                    if status == 'building':
-                        self.chat_client.subscribe(self.user_id, group_item.label.text())
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    # app.setAttribute(Qt.AA_EnableHighDpiScaling, True)  # 自适应高分屏
     app.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
-    main = LoginForm()
+    main = MainPage('123')
     main.show()
     sys.exit(app.exec_())

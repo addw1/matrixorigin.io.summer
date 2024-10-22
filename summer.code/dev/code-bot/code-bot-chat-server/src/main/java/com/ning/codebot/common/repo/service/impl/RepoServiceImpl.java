@@ -1,10 +1,14 @@
 package com.ning.codebot.common.repo.service.impl;
 
 import com.ning.codebot.common.repo.dao.RepoDao;
+import com.ning.codebot.common.repo.domain.entity.UserRepo;
 import com.ning.codebot.common.repo.service.RepoService;
 import com.ning.codebot.common.repo.service.adapter.UserRepoAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class RepoServiceImpl implements RepoService {
@@ -19,8 +23,12 @@ public class RepoServiceImpl implements RepoService {
     }
 
     @Override
-    // 0 building 1 success 2 failure
-    public Integer checkRepo(String userName, String repoName){
-        return repoDao.checkRepo(userName, repoName);
+    public List<String> getRepos(String userName){
+        List<UserRepo> repoEntities = repoDao.getRepos(userName);
+        List<String> repos = new ArrayList<String>();
+        for(UserRepo repo : repoEntities){
+            repos.add(repo.getRepoName());
+        }
+        return repos;
     }
 }

@@ -20,26 +20,25 @@ public abstract class AbstractMsgHandler<Req> {
 
     @Autowired
     private MessageDao messageDao;
-    private Integer type;
     @PostConstruct
     private void init() {
         // register in the factory
-        MsgHandlerFactory.register(this.type, this);
+        MsgHandlerFactory.register(getMsgTypeEnum().getType(), this);
     }
 
     abstract MessageTypeEnum getMsgTypeEnum();
 
     @Transactional
-    public Long checkAndSaveMsg(ChatMessageReq request, Long uid) {
+    public Long checkAndSaveMsg(ChatMessageReq request) {
         String content = request.getContent();
         // check
-        checkMsg(content, request.getRoomId(), uid);
+        // checkMsg(content, request.getRoomId(), uid);
         // convert to insert data
-        Message insert = MessageAdapter.buildMsgSave(request, uid, convertToRowData(content));
+        Message insert = MessageAdapter.buildMsgSave(request, convertToRowData(content));
         // save to the db
         messageDao.save(insert);
         return insert.getId();
     }
-    protected abstract void checkMsg(String content, String roomId, Long uid);
+    // protected abstract void checkMsg(String content, String roomId, Long uid);
     protected abstract String convertToRowData(String content);
 }

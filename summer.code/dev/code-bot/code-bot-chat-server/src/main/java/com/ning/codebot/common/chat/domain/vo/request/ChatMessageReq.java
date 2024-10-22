@@ -16,9 +16,10 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ChatMessageReq {
+
+    @ApiModelProperty("Room Name")
     @NotNull
-    @ApiModelProperty("Room Id")
-    private String roomId;
+    private String roomName;
 
     // Now only support text type
     //TODO: support more types in the feature
@@ -30,5 +31,9 @@ public class ChatMessageReq {
     @ApiModelProperty("Message Body")
     @NotNull
     private String content;
+
+    @ApiModelProperty("senderName")
+    @NotNull
+    private String senderName;
 
 }

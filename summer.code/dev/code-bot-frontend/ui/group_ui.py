@@ -59,6 +59,7 @@ class Ui_Form(object):
         self.label_3.setFont(font)
         self.label_3.setStyleSheet("border: 0px;\n"
 "color: qlineargradient(x0:0, y0:1, x2:0, y2:1,stop:0 rgb(113, 109, 252), stop:1 rgb(255, 255, 255));")
+        self.label_3.setText("")
         self.label_3.setObjectName("label_3")
 
         self.retranslateUi(Form)
@@ -68,5 +69,4 @@ class Ui_Form(object):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
         self.label.setText(_translate("Form", "Default"))
-        self.label_3.setText(_translate("Form", "building"))
 import res_rc

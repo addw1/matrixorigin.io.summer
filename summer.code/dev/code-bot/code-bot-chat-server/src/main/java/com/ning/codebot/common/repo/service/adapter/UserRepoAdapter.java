@@ -14,7 +14,7 @@ public class UserRepoAdapter {
                 .userName(userName)
                 .status(0)
                 .updateTime(new Date())
-                .times(1)
+                .tryTimes(1)
                 .build();
     }
 

@@ -36,7 +36,7 @@ public class UserRepo {
     @TableField("update_time")
     private Date updateTime;
 
-    @TableField("try_times")
-    private Integer times;
+    @TableField(value = "try_times")
+    private Integer tryTimes;
 
 }
