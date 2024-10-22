@@ -1,4 +1,5 @@
 from PyQt5 import Qt
+from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QDialog
 from PyQt5.uic.properties import QtCore
 
@@ -18,31 +19,53 @@ class MainPage(QDialog, Ui_Form):
         self.user_id = user_id
         self.set_user_name(user_id)
 
-        # get chat history
         # [key : List[Message]]
         self.groups = {}
         self.groups_order = []
         self.cur_group = None
-
+        self.groups_id = {}
         # widget factory
-        self.factory =  SimpleFactory()
+        self.factory = SimpleFactory()
 
          # for all buttons
         self.send_btn.clicked.connect(self.on_send_clicked)
         self.add_btn.clicked.connect(self.on_add_clicked)
         self.session_list.clicked.connect(self.on_groups_clicked)
 
+
         self.init_state()
+
+        # create QTimer
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.run_task)
+        self.timer.start(1000)
+    def run_task(self):
+        messages = self.chat_client.get_mes(
+            self.user_id,
+            self.cur_group,
+            self.groups_id[self.cur_group],
+            False
+        )
+        if messages is None: return
+        # print(messages)
+        for message in messages:
+            client_mes = Message(
+                sender=message['sender'],
+                content=message['content'],
+            )
+            self.groups[self.cur_group].append(client_mes)
+            self.add_bubble_card(client_mes)
+
 
     def init_state(self):
         # get all groups
         self.load_groups()
-        # get all history messages
-        self.load_history_message()
-        # load all group cards
-        self.load_groups_card()
         # set the current group
         self.cur_group = self.groups_order[0]
+        # load all group cards
+        self.load_groups_card()
+        # get all history messages
+        self.load_history_message()
         # set chat list
         self.change_bubbles_card()
 
@@ -52,6 +75,7 @@ class MainPage(QDialog, Ui_Form):
         self.search_line.clear()
         # update local db
         self.groups[group_name] = []
+        self.groups_order.append(group_name)
         # update ui
         self.add_group_card(group_name)
         # send to the server
@@ -59,10 +83,11 @@ class MainPage(QDialog, Ui_Form):
 
     def on_send_clicked(self):
         text = self.input_line.toPlainText()
-        message = Message('self', text)
-        rep_message = self.send_message(message)
+        self.input_line.clear()
+        message = Message(self.user_id, text)
+        self.send_message(message)
         self.add_bubble_card(message)
-        self.add_bubble_card(rep_message)
+        # self.add_bubble_card(rep_message)
 
     def on_groups_clicked(self):
         group_name = self.groups_order[self.session_list.currentRow()]
@@ -73,12 +98,14 @@ class MainPage(QDialog, Ui_Form):
         # store in the local db
         self.groups[self.cur_group].append(message)
         # send to the server
-        response = self.chat_client.send_msg(name=self.user_id,
+        msgId = self.chat_client.send_msg(name=self.user_id,
                                   group_name=self.cur_group,
                                   text=message.content)
-        rep_message = Message('bot', response)
-        self.groups[self.cur_group].append(rep_message)
-        return rep_message
+        self.groups_id[self.cur_group] = msgId
+        #print(response)
+        # rep_message = Message('bot', response)
+        # self.groups[self.cur_group].append(rep_message)
+        # return rep_message
 
     def set_user_name(self, user_name):
         self.name_label.clear()
@@ -86,16 +113,24 @@ class MainPage(QDialog, Ui_Form):
         self.user_id = user_name
 
     def load_groups(self):
-      groups = self.chat_client.get_groups(self.user_id)
-      self.groups.clear()
-      self.groups_order.clear()
-      for group in groups:
-           self.groups_order.append(group)
-           self.groups[group] = []
+        groups = self.chat_client.get_groups(self.user_id)
+        self.groups.clear()
+        self.groups_order.clear()
+        if groups is None: return
+        for group in groups:
+            self.groups_order.append(group)
+            self.groups[group] = []
+            self.groups_id[group] = 0
+
 
     def load_history_message(self):
         for group in self.groups.keys():
-            self.groups[group] = self.chat_client.get_mes(self.user_id,  group)
+            self.groups[group] = self.chat_client.get_mes(
+                self.user_id,
+                self.cur_group,
+                self.groups_id[self.cur_group],
+                True
+            )
 
     def load_groups_card(self) -> None:
      self.session_list.clear()
@@ -104,6 +139,7 @@ class MainPage(QDialog, Ui_Form):
 
     def change_bubbles_card(self):
       self.chat_list.clear()
+      print(self.cur_group)
       for message in self.groups[self.cur_group]:
            self.add_bubble_card(message=message)
 
@@ -116,7 +152,7 @@ class MainPage(QDialog, Ui_Form):
      self.session_list.setItemWidget(item, widget)
 
     def add_bubble_card(self, message: Message):
-      if message.sender == 'self':
+      if message.sender == self.user_id:
            item, widget = self.factory.create_self_card(self.right_frame.width(), message.content)
       else:
            item, widget = self.factory.create_friend_card(self.right_frame.width(), message.content)

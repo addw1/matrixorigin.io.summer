@@ -17,9 +17,6 @@ public class TextMsgHandler extends AbstractMsgHandler<TextMsgReq> {
         return MessageTypeEnum.TEXT;
     }
 
-    protected void checkMsg(String content, String roomId, Long uid){
-        return;
-    }
     protected String convertToRowData(String content){
         return content;
     }

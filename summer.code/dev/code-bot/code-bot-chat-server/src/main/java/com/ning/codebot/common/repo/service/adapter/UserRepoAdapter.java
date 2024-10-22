@@ -13,7 +13,8 @@ public class UserRepoAdapter {
                 .repoName(repoName)
                 .userName(userName)
                 .status(0)
-                .createTime(new Date())
+                .updateTime(new Date())
+                .tryTimes(1)
                 .build();
     }
 

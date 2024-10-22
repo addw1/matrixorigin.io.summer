@@ -1,5 +1,7 @@
 ### chat client
 
+get data
+
 **:one:   get_groups** 
 	Input: user_id
 	output: list[String]

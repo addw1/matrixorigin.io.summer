@@ -20,9 +20,15 @@ spring:
   jackson:
     serialization:
       write-dates-as-timestamps: true
+  kafka:
+    topic:
+      my-topic1: ${kafka.topic.mytopic1}
+      my-topic2: ${kafka.topic.mytopic2}
+
 
 jwt:
   secret: ${codebot.jwt.secret}
+
 
 github:
   client:

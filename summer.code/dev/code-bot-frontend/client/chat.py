@@ -16,49 +16,76 @@ class ChatClient:
     func: get the user's group
     """
     def get_groups(self, user_id:str) -> List[str]:
-        return get_groups_mock()
+        # return get_groups_mock()
+        try:
+            url = "http://localhost:8080/codebot/repo/groups"
+            params = {
+                "userName": user_id
+            }
+            response = requests.get(url, params=params)
+            response_data = response.json()
+            return response_data.get("data")
+        except Exception as e:
+            print(e)
+        return None
 
     """
     func: get the user's chat history
     """
-    def get_mes(self, user_id: str, group_name: str) -> List[Message]:
-        return get_mes_mock()
+    def get_mes(self, user_id: str, group_name: str, id:int, is_guide:bool) -> List[Message]:
+        if is_guide:
+            return get_mes_mock()
+        try:
+            url = "http://localhost:8080/codebot/chat/getMes"
+            params = {
+                "userName": user_id,
+                "roomName": group_name,
+                "id": id
+            }
+            response = requests.get(url, params=params)
+            response_data = response.json()
+            return response_data.get("data")
+        except Exception as e:
+            print(e)
+        return None
+
 
     """
     func: send the message from the db
     """
     def send_msg(self, name, group_name, text):
-        return 'test 01'
         try:
-            url = "http://localhost:5000/api/chat"
+            url = "http://localhost:8080/codebot/chat/msg"
             data = {
-                "partner_name": name,
-                "chat_history": [],
-                "content": text
+                "roomName": group_name,
+                "senderName": name,
+                "content": text,
+                "msgType": 1
             }
             response = requests.post(url, json=data)
             response_data = response.json()
-            response_value = response_data.get("response")
-            # print(response_value)
-            return response_value
+            response_id = response_data.get("data")
+            # print(response_id)
+            # print(response_data)
+            return response_id['id']
         except Exception as e:
             print(e)
         return 'error'
-    def subscribe(self, user_id:str, group_name:str) -> Message:
-        return '1'
+
+    def subscribe(self, user_id:str, group_name:str):
         try:
-            url = "http://localhost:5000/api/chat"
+            url = "http://localhost:8080/codebot/repo/upload"
             data = {
-                "user_name": user_id,
-                "group_name": group_name,
+                "userName": user_id,
+                "repoName": group_name,
             }
             response = requests.post(url, json=data)
             response_data = response.json()
-            response_value = response_data.get("response")
-            return response_value
+            res = response_data.get("success")
+            return res
         except Exception as e:
             print(e)
-            return 'error'
+            return False
 
     def send_code(self, code):
         try:

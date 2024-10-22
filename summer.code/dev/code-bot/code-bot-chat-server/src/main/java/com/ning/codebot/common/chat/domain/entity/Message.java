@@ -29,14 +29,14 @@ public class Message implements Serializable {
     /**
      * room id
      */
-    @TableField("room_id")
-    private String roomId;
+    @TableField("room_name")
+    private String roomName;
 
     /**
      * from uid
      */
-    @TableField("from_uid")
-    private Long fromUid;
+    @TableField("sender_name")
+    private String senderName;
 
     /**
      * the content of messages
@@ -49,7 +49,6 @@ public class Message implements Serializable {
      */
     @TableField("create_time")
     private Date createTime;
-
 
 }
 

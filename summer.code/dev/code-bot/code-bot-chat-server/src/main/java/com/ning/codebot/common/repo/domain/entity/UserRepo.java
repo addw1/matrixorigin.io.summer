@@ -11,7 +11,7 @@ import java.util.Date;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-@TableName(value = "messages", autoResultMap = true)
+@TableName(value = "user_repo", autoResultMap = true)
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,18 +22,21 @@ public class UserRepo {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @TableId(value = "user_name")
+    @TableField(value = "user_name")
     private String userName;
 
-    @TableId(value = "repo_name")
+    @TableField(value = "repo_name")
     private String repoName;
 
     // 0: building 1: finish 2: fail
-    @TableId(value = "status")
+    @TableField(value = "status")
     private Integer status;
 
      // create time
-    @TableField("create_time")
-    private Date createTime;
+    @TableField("update_time")
+    private Date updateTime;
+
+    @TableField(value = "try_times")
+    private Integer tryTimes;
 
 }
