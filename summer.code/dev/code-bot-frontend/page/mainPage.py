@@ -158,4 +158,3 @@ class MainPage(QDialog, Ui_Form):
            item, widget = self.factory.create_friend_card(self.right_frame.width(), message.content)
       self.chat_list.addItem(item)
       self.chat_list.setItemWidget(item, widget)
-
