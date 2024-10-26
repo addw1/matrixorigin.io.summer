@@ -150,3 +150,4 @@ def get_mes_mock():
         sender='bot',
         content=GUIDE_CONVERSATION
     )]
+
