@@ -29,44 +29,7 @@ public class RepoDao extends ServiceImpl<RepoMapper, UserRepo> {
         return Boolean.TRUE;
     }
 
-    public Integer checkRepo(String userName, String repoName) {
-        UserRepo userRepo = lambdaQuery()
-                .eq(UserRepo::getUserName, userName)
-                .eq(UserRepo::getRepoName, repoName)
-                .one();
-        return userRepo.getStatus();
-    }
 
-    public List<String> getUnsuccessRepo(){
-        return lambdaQuery()
-                .eq(UserRepo::getStatus, 0)
-                .list()
-                .stream()
-                .map(UserRepo::getRepoName)
-                .distinct()
-                .collect(Collectors.toList());
-    }
 
-    public boolean updateUnsuccessfulRepos() {
-        return lambdaUpdate()
-                .eq(UserRepo::getTimes, 2)
-                .ne(UserRepo::getStatus, 1)
-                .set(UserRepo::getStatus, 2)
-                .update();
-    }
-
-    public boolean updateSuccessRepo(String repoName) {
-        return lambdaUpdate()
-                .eq(UserRepo::getRepoName, repoName)
-                .set(UserRepo::getStatus, 1)
-                .update();
-    }
-
-    public boolean updateTimesRepo(String repoName) {
-        return lambdaUpdate()
-                .eq(UserRepo::getRepoName, repoName)
-                .setSql("update_time = update_time + 1")
-                .update();
-    }
 
 }
