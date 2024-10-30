@@ -3,7 +3,7 @@ from PyQt5.QtCore import pyqtSignal, QThread
 
 from client.chat import ChatClient
 
-GUIDE_CONVERSATION = 'I am Opportunity Copilot. How can I assist you today? I can help by recommending opportunities, retrieving data, providing historical summaries, and more.'
+GUIDE_CONVERSATION = 'I am Code Copilot. How can I assist you today? I can help by recommending opportunities, retrieving data, providing historical summaries, and more.'
 
 
 class SendThread(QThread):
@@ -23,4 +23,16 @@ class SendThread(QThread):
            group_name=self.group_name,
            text=self.text,
         )
+        self.result_ready.emit(resp)
+
+class UpdateThread(QThread):
+    result_ready = pyqtSignal(str)
+
+    def __init__(self, user_name, group_name, client):
+        super().__init__()
+        self.user_name = user_name
+        self.group_name = group_name
+        self.client = client
+    def run(self):
+        resp = self.client.check(user_name=self.user_name, group_name=self.group_name)
         self.result_ready.emit(resp)

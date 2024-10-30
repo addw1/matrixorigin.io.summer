@@ -39,7 +39,7 @@ class LoginForm(QDialog, Signin_Form):
         ans = self.chat_client.send_code(code)
         if ans is not None:
             print(ans)
-            self.main = MyMainForm(ans)
+            self.main = MainPage(ans)
             self.main.show()
             self.close()
 
@@ -214,6 +214,7 @@ class MyMainForm(QDialog, Ui_Form):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
-    main = MainPage('123')
+    main = LoginForm()
+    # main = MainPage('addw1')
     main.show()
     sys.exit(app.exec_())

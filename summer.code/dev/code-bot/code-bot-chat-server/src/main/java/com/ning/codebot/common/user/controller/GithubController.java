@@ -38,7 +38,6 @@ public class GithubController {
         this.random = new Random();
     }
 
-
     /*
      * Let user jump to GITHUB page
      */

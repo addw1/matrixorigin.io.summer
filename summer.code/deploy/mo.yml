@@ -41,6 +41,12 @@ spec:
         memory: 1Gi
     sharedStorage:
       s3:
+        bucket: <ChangeMe>   
+        region: <ChangeMe>        
+        accessKey: object_user1     
+        secretKey: ChangeMeChangeMeChangeMeChangeMeChangeMe  
+        endpoint: <ChangeMe> 
+        expiryTime: 2592000           
     pvcRetentionPolicy: Retain 
     volume:
       size: 1Gi 

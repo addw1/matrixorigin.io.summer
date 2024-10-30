@@ -40,6 +40,8 @@ class MainPage(QDialog, Ui_Form):
         self.timer.timeout.connect(self.run_task)
         self.timer.start(1000)
     def run_task(self):
+        if self.cur_group is None or self.groups_id[self.cur_group] == 0:
+            return
         messages = self.chat_client.get_mes(
             self.user_id,
             self.cur_group,
@@ -61,7 +63,8 @@ class MainPage(QDialog, Ui_Form):
         # get all groups
         self.load_groups()
         # set the current group
-        self.cur_group = self.groups_order[0]
+        if len(self.groups_order) != 0:
+            self.cur_group = self.groups_order[0]
         # load all group cards
         self.load_groups_card()
         # get all history messages
@@ -138,8 +141,11 @@ class MainPage(QDialog, Ui_Form):
            self.add_group_card(group_name=group)
 
     def change_bubbles_card(self):
+
       self.chat_list.clear()
       print(self.cur_group)
+      if self.cur_group is None:
+          return
       for message in self.groups[self.cur_group]:
            self.add_bubble_card(message=message)
 
@@ -158,4 +164,3 @@ class MainPage(QDialog, Ui_Form):
            item, widget = self.factory.create_friend_card(self.right_frame.width(), message.content)
       self.chat_list.addItem(item)
       self.chat_list.setItemWidget(item, widget)
-

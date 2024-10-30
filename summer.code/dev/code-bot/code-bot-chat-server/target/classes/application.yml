@@ -37,3 +37,9 @@ github:
     redirect-url: "http://localhost:8080/codebot/login/oauth2/callback&state="
     access-token-url: "https://github.com/login/oauth/access_token"
     user-info-url: "https://api.github.com/user"
+
+llm:
+  backend:
+    subscribe:${llm.backend.subscribe.url}
+
+

@@ -1,4 +1,8 @@
 package com.ning.codebot.common.client;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -7,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Service
 public class LLMClient {
     private final RestTemplate restTemplate;
+
+    @Value("${llm.backend.subscribe.url}")
+    private String subscribeUrl;
 
     public LLMClient() {
         this.restTemplate = new RestTemplate();
@@ -19,16 +26,16 @@ public class LLMClient {
         return restTemplate.getForObject(url, String.class);
     }
 
-    public boolean subscribeRepo(String repoName, String userName){
-        // Construct the URL dynamically
-        String url = String.format("http://localhost:8080/repos/%s/%s", repoName, userName);
-        // Make a GET request and return the response
+    public boolean subscribeRepo(String repoName){
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        String requestBody = String.format("{\"repo_name\": \"%s\"}", repoName);
+        HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
         try {
-            ResponseEntity<String> responseEntity = restTemplate.getForEntity(url, String.class);
-            // Check if the response status code is 200 OK
-            return responseEntity.getStatusCode().is2xxSuccessful();
+            ResponseEntity<String> response = restTemplate.postForEntity(subscribeUrl, request, String.class);
+            return response.getStatusCode().is2xxSuccessful();
         } catch (Exception e) {
-            System.err.println("Error occurred: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }

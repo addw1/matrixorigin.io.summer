@@ -1,13 +1,12 @@
 import os
 
-from langchain.document_loaders import PyPDFLoader
-from langchain.document_loaders import Docx2txtLoader
-from langchain.document_loaders import TextLoader
+from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.document_loaders import Docx2txtLoader
+from langchain_community.document_loaders import TextLoader
 
 from .config import Config
 config = Config()
 
-# TODO: 兼容更多文件格式的加载
 def load_documents_from_folder(base_dir):
     documents = []
 
@@ -18,7 +17,16 @@ def load_documents_from_folder(base_dir):
         elif file_path.endswith('.docx'):
             loader = Docx2txtLoader(file_path)
             documents.extend(loader.load())
-        elif file_path.endswith('.go'):
+        elif file_path.endswith('.java'):
+            loader = TextLoader(file_path)
+            documents.extend(loader.load())
+        elif file_path.endswith('.c'):
+            loader = TextLoader(file_path)
+            documents.extend(loader.load())
+        elif file_path.endswith('.cpp'):
+            loader = TextLoader(file_path)
+            documents.extend(loader.load())
+        elif file_path.endswith('.py'):
             loader = TextLoader(file_path)
             documents.extend(loader.load())
 
@@ -76,8 +84,8 @@ def check_repo_folder_exists(repoName):
         return False
 
 # 数据库的相关操作
-from langchain.vectorstores import Matrixone
-from langchain.embeddings import OpenAIEmbeddings
+from .Matrixone import Matrixone
+from langchain_community.embeddings import OpenAIEmbeddings
 def get_vectorstore(repoName):
     return Matrixone(
         host=config.DATABASE_HOST,

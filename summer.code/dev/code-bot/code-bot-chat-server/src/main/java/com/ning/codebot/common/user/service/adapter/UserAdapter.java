@@ -9,7 +9,7 @@ public class UserAdapter {
         User user =new User();
         user.setName(userInfo.getUserName());
         user.setAvatar(userInfo.getAvatarUrl());
-        user.setName(userInfo.getNodeId());
+        user.setNodeId(userInfo.getNodeId());
         return user;
     }
 }

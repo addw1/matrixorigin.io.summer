@@ -11,7 +11,7 @@ from utils.text_util import preprocess_text
 UNIT_HEIGHT = 35
 class SimpleFactory:
     def create_friend_card(self, width, text):
-        return self.create_card('friend',width, text)
+        return self.create_card('friend', width, text)
 
     def create_self_card(self, width, text):
         return self.create_card('self', width, text)
@@ -22,6 +22,12 @@ class SimpleFactory:
         _item.setupUi(widget)
         _item.label.clear()
         _item.label.setText(text)
+        _item.label_3.clear()
+        widget.setProperty("group_item", _item)
+        if text == 'default':
+            _item.label_3.setText('success')
+        else:
+            _item.label_3.setText('building')
         styles = ["image: url(:/resources/avatar_9.png);margin:4px;border:0px;background-color:#1a1a1e;",
                   "image: url(:/resources/avatar_10.png);margin:4px;border:0px;background-color:#1a1a1e;"
                   "image: url(:/resources/avatar_11.png);margin:4px;border:0px;background-color:#1a1a1e;"

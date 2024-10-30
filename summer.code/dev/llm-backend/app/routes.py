@@ -1,27 +1,30 @@
-from flask import Flask, request, render_template, Blueprint
+from flask import Flask, request, render_template, Blueprint, jsonify
 from flask import current_app
-import os
-
+import threading
+from .client import DbClient
 from .utils import *
 from .config import Config
+from .rag import git_clone
+from .Matrixone import Matrixone
+import concurrent.futures
 config = Config()
 
 main_bp = Blueprint('main', __name__)
+excutor = concurrent.futures.ThreadPoolExecutor()
 
 os.environ["OPENAI_API_KEY"] = config.OPENAI_API_KEY
 
-# 定义路由和视图函数
-@main_bp.route('/', methods=['GET', 'POST'])
-def home():
-    # 1.Load 导入Document Loaders
-    base_dir = './gitRepo'  # 文档的存放目录
-    documents = load_documents_from_folder(base_dir)
 
-    # 2.Split 将Documents切分成块以便后续进行嵌入和向量存储
+def download_task(git_url):
+    # download from github
+    is_success, destination = git_clone(git_url)
+    if not is_success:
+        return False
+    # load document to memory
+    documents = load_documents_from_folder(destination)
+    # split document
     chunked_documents = split_documents(documents, 200, 10)
-
-    # 3.Store 将分割嵌入并存储在矢量数据库MO中
-    from langchain.vectorstores import Matrixone
+    # store in mo
     from langchain.embeddings import OpenAIEmbeddings
     vectorstore = Matrixone.from_documents(
         documents=chunked_documents, # 以分块的文档
@@ -29,46 +32,30 @@ def home():
         user="root",
         password="111",
         dbname="test",
-        port=6001)  # 指定collection_name
+        port=6001)  # 指定c+ollection_name
 
-    # 4. Retrieval 准备模型和Retrieval链
-    qa_chain = generate_qa_chain(vectorstore)
-    if request.method == 'POST':
 
-        # 接收用户输入作为问题
-        question = request.form.get('question')        
-        
-        # RetrievalQA链 - 读入问题，生成答案
-        result = qa_chain({"query": question})
-        
-        # 把大模型的回答结果返回网页进行渲染
-        return render_template('index.html', result=result)
-    
-    return render_template('index.html')
 
-@main_bp.route('/repos/<string:repoName>/<int:userID>')
-def handle_repo(repoName, userID):
-    # 在本地的repo文件夹中找到该仓库的文件
-    print("Loading Project" + repoName)
-    if not check_repo_folder_exists(repoName):
-        return f"未找到仓库"
-
-    # 1.Load 导入Document Loaders
-    repo_dir = current_app.config['PATH_TO_GITREPO_DIR'] + repoName
-    documents = load_documents_from_folder(repo_dir)
-
-    # 2.Split 将Documents切分成块以便后续进行嵌入和向量存储
-    chunked_documents = split_documents(documents, 200, 10)
-
-    # 3.Store 将分割嵌入并存储在矢量数据库MO中
-    add_documents_to_vectorstore(repoName, chunked_documents)
-
-    return f"repo_dir: {repo_dir}, User ID: {userID}"
+def subscribe():
+    # Check if the request contains JSON data
+    if not request.is_json:
+        return jsonify({"status": "error"}), 400
+    # Get JSON data
+    data = request.get_json()
+    repo_name = data.get('repo_name')
+    db = DbClient()
+    if db.check_table_exists('code_repo', repo_name):
+        return jsonify({"status": "success"}), 200
+    else:
+        # print(repo_name)
+        repo_url = 'https://github.com/' + repo_name
+        excutor.submit(download_task, repo_url)
+        return jsonify({"status": "downloading"}), 200
 
 # 接收来自code-bot的提问
-@main_bp.route('/talks/<string:repoName>/<int:userID>/<string:question>', methods=['GET', 'POST'])
+
 def talk(repoName, userID, question):
     vectorstore = get_vectorstore(repoName)
     qa_chain = generate_qa_chain(vectorstore)
     result = qa_chain({"query": request.question})    
-    return f"answer: {result['result']}, history: {result['history']}"
+    return result['result']
