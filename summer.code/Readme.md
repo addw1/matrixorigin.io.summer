@@ -1,5 +1,3 @@
- 
-
 <img src="https://img.shields.io/badge/platform-MacOS-white.svg" alt="macos"/> <img src="https://img.shields.io/badge/platform-Linux-9cf.svg" alt="linux"/><img src="https://img.shields.io/badge/License-Apache%202.0-red.svg" alt="license"/> <img src="https://img.shields.io/badge/Language-Java-blue.svg" alt="language"/> <img src="https://img.shields.io/badge/Language-Python-green.svg" alt="language"/>
 <br>
 
@@ -55,3 +53,4 @@ MatrixOne的HSTAP数据库技术与Dell ObjectScale的可扩展对象存储相�
 
 ## 贡献规则
 参考contributing.md
+
