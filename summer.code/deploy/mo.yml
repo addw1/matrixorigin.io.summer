@@ -1,0 +1,76 @@
+apiVersion: core.matrixorigin.io/v1alpha1
+kind: MatrixOneCluster
+metadata:
+  name: mo
+  namespace: mo-hn
+spec:
+  tn:
+    cacheVolume: 
+      size: 4Gi 
+      storageClassName: local-path 
+    resources:
+      requests:
+        cpu: 100m 
+        memory: 500Mi 
+      limits: 
+        cpu: 200m
+        memory: 1Gi
+    config: | 
+      [dn.Txn.Storage]
+      backend = "TAE"
+      log-backend = "logservice"
+      [dn.Ckp]
+      flush-interval = "60s"
+      min-count = 100
+      scan-interval = "5s"
+      incremental-interval = "60s"
+      global-interval = "100000s"
+      [log]
+      level = "error"
+      format = "json"
+      max-size = 512
+    replicas: 
+  logService:
+    replicas: 3 
+    resources:
+      requests:
+        cpu: 100m
+        memory: 500Mi 
+      limits: 
+        cpu: 200m
+        memory: 1Gi
+    sharedStorage:
+      s3:
+    pvcRetentionPolicy: Retain 
+    volume:
+      size: 1Gi 
+    config: | 
+      [log]
+      level = "error"
+      format = "json"
+      max-size = 512
+  tp:
+    cacheVolume: 
+      size: 5Gi 
+      storageClassName: local-path 
+    resources:
+      requests:
+        cpu: 100m 
+        memory: 500Mi 
+      limits: 
+        cpu: 200m
+        memory: 2Gi
+    serviceType: NodePort 
+    nodePort: 31429 
+    config: | 
+      [cn.Engine]
+      type = "distributed-tae"
+      [log]
+      level = "debug"
+      format = "json"
+      max-size = 512
+    replicas: 1
+  version: nightly-54b5e8c 
+  # https://hub.docker.com/r/matrixorigin/matrixone/tags
+  imageRepository: matrixorigin/matrixone 
+  imagePullPolicy: IfNotPresent #
