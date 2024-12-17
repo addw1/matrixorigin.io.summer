@@ -5,6 +5,10 @@
 
 # MatrixAI Bot
 
+<img src="./summer.code/img/front1.png" alt="8bit-gamepad" style="zoom: 80%;" />
+
+<img src="./summer.code/img/front2.png" alt="8bit-gamepad" style="zoom: 80%;" />
+
 This project aims to develop a github repository dialogue bot. After the user inputs the corresponding URL of the repository, the robot can answer the relevant information about the repository and help the user learn to use the corresponding repository. The system design uses a hybrid framework of **springboot** + **Flask**. At the same time, based on **matrix one** to complete the vector storage && retrieval to build a local knowledge base.
 
 <img src="./summer.code/img/2.png" alt="8bit-gamepad" style="zoom: 67%;" />
@@ -29,11 +33,6 @@ MatrixOne's HSTAP database technology combined with Dell ObjectScale's scalable 
 ### 📜 Chat History
 
 **Bot Memory Module**: based on sliding window 🪟, allows AI to maintain long term memory during multiple rounds of dialogue.
-
-
-<img src="./summer.code/img/front1.png" alt="8bit-gamepad" style="zoom: 80%;" />
-
-<img src="./summer.code/img/front2.png" alt="8bit-gamepad" style="zoom: 80%;" />
 
 ##  Backend
 
